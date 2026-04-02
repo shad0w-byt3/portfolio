@@ -10,7 +10,7 @@ export default {
         brand: {
           bg: '#0A0A0A',
           card: '#121212',
-          primary: '#00FF9C',
+          primary: 'var(--accent-color, #00FF9C)',
           secondary: '#2F81F7',
           text: '#E5E7EB',
           muted: '#9CA3AF',

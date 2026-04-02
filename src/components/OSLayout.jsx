@@ -13,8 +13,9 @@ export default function OSLayout() {
   const [openApps, setOpenApps] = useState([])
   const [activeApp, setActiveApp] = useState(null)
   const [terminalOpen, setTerminalOpen] = useState(false)
+  const [accentColor, setAccentColor] = useState('#00FF9C') // default neon green
 
-  // Load saved window positions from localStorage
+  // Load saved window positions and accent color from localStorage
   useEffect(() => {
     const savedApps = localStorage.getItem('ivansec-os-apps')
     if (savedApps) {
@@ -24,6 +25,11 @@ export default function OSLayout() {
         console.warn('Failed to parse saved window positions')
       }
     }
+    const savedColor = localStorage.getItem('ivansec-accent-color')
+    if (savedColor) {
+      setAccentColor(savedColor)
+      document.documentElement.style.setProperty('--accent-color', savedColor)
+    }
   }, [])
 
   // Save window positions to localStorage whenever they change
@@ -32,6 +38,17 @@ export default function OSLayout() {
       localStorage.setItem('ivansec-os-apps', JSON.stringify(openApps))
     }
   }, [openApps])
+
+  // Update CSS variable when accent color changes
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent-color', accentColor)
+    // Convert hex to RGB for rgba() usage
+    const r = parseInt(accentColor.slice(1, 3), 16)
+    const g = parseInt(accentColor.slice(3, 5), 16)
+    const b = parseInt(accentColor.slice(5, 7), 16)
+    document.documentElement.style.setProperty('--accent-color-rgb', `${r}, ${g}, ${b}`)
+    localStorage.setItem('ivansec-accent-color', accentColor)
+  }, [accentColor])
 
   useEffect(() => {
     const bootTimer = setTimeout(() => setBootComplete(true), 3000)
@@ -160,13 +177,35 @@ export default function OSLayout() {
           </div>
           <span className="text-brand-muted text-[10px] sm:text-xs hidden sm:inline">v2.0.77</span>
         </div>
+
+        {/* Accent Color Picker - visible on all screens */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="text-[10px] text-brand-muted hidden sm:inline">THEME:</span>
+          {[
+            { color: '#00FF9C', name: 'Neon Green' },
+            { color: '#00F3FF', name: 'Cyber Cyan' },
+            { color: '#FF00FF', name: 'Neon Magenta' },
+            { color: '#FFB800', name: 'Amber' },
+            { color: '#2F81F7', name: 'Electric Blue' }
+          ].map(({ color, name }) => (
+            <button
+              key={color}
+              onClick={() => setAccentColor(color)}
+              className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-transform hover:scale-125 ${accentColor === color ? 'ring-2 ring-white/50' : ''}`}
+              style={{ backgroundColor: color }}
+              title={name}
+              aria-label={`Change accent color to ${name}`}
+            />
+          ))}
+        </div>
+
         <div className="hidden sm:flex items-center gap-4 text-xs font-mono">
           <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
+            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: accentColor }} />
             CPU: <span className="text-brand-text">12%</span>
           </span>
           <span className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-brand-secondary rounded-full" />
+            <div className="w-2 h-2 h-2 bg-brand-secondary rounded-full" />
             MEM: <span className="text-brand-text">4.2GB</span>
           </span>
           <span className="flex items-center gap-1">
