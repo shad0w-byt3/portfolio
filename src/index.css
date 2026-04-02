@@ -17,12 +17,31 @@
   --animate-glow: glow 2s ease-in-out infinite alternate;
   --animate-scanline: scanline 8s linear infinite;
   --animate-pulse-neon: pulse-neon 2s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 8s ease-in-out infinite;
 }
 
 /* Accent Color Variants (will be updated via JS) */
 :root {
   --accent-color: #00FF9C;
   --accent-color-rgb: 0, 255, 156;
+}
+
+/* Slow pulse animation for grid */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.35; }
+}
+
+/* Additional scanline overlay pattern */
+.bg-scanline-overlay {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: scanline 8s linear infinite;
 }
 
 /* Base Styles */

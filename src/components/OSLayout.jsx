@@ -119,8 +119,15 @@ export default function OSLayout() {
 
   return (
     <div className="fixed inset-0 bg-brand-bg text-brand-text overflow-hidden select-none">
-      {/* Desktop Grid */}
-      <div className="absolute inset-0 bg-grid opacity-20" />
+      {/* Desktop Grid with pulse animation */}
+      <div className="absolute inset-0 bg-grid animate-pulse-slow opacity-30" />
+
+      {/* Matrix Rain Effect */}
+      <MatrixRain color={accentColor} />
+
+      {/* CRT Scanlines Overlay */}
+      <div className="absolute inset-0 scanlines opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-scanline-overlay opacity-10 pointer-events-none" />
 
       {/* Desktop Icons - Responsive Grid Layout */}
       <div className="absolute top-10 sm:top-16 left-2 sm:left-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-3 sm:gap-x-6 gap-y-4 sm:gap-y-6">
@@ -708,5 +715,82 @@ function MoreAppsContent() {
         ))}
       </div>
     </div>
+  )
+}
+
+// Matrix Rain Component - falling hex characters
+function MatrixRain({ color }) {
+  const canvasRef = useRef(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    let animationFrameId
+
+    // Set canvas size
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
+
+    // Matrix characters
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]();:='
+    const fontSize = 14
+    const columns = Math.floor(canvas.width / fontSize)
+    const drops = Array(columns).fill(1)
+
+    // Convert hex color to rgba
+    const hexToRgba = (hex, alpha) => {
+      const r = parseInt(hex.slice(1, 3), 16)
+      const g = parseInt(hex.slice(3, 5), 16)
+      const b = parseInt(hex.slice(5, 7), 16)
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+
+    const draw = () => {
+      ctx.fillStyle = 'rgba(10, 10, 10, 0.05)' // fade effect
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      ctx.fillStyle = hexToRgba(color, 0.8)
+      ctx.font = `${fontSize}px monospace`
+
+      drops.forEach((y, i) => {
+        const char = chars[Math.floor(Math.random() * chars.length)]
+        const x = i * fontSize
+        const yPos = y * fontSize
+
+        // Draw character
+        ctx.fillText(char, x, yPos)
+
+        // Reset drop when it reaches bottom
+        if (yPos > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0
+        }
+
+        // Increment Y position
+        drops[i] = y + 0.8
+      })
+
+      animationFrameId = requestAnimationFrame(draw)
+    }
+
+    draw()
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas)
+      cancelAnimationFrame(animationFrameId)
+    }
+  }, [color])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 pointer-events-none opacity-20"
+      style={{ mixBlendMode: 'screen' }}
+    />
   )
 }
