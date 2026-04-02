@@ -308,7 +308,6 @@ function Window({ app, isActive, onActivate, onClose, onMinimize, children, zInd
       exit={{ opacity: 0, scale: 0.95 }}
       drag
       dragMomentum={false}
-      dragListener={false}
       onMouseDown={() => onActivate()}
       className={`absolute w-[90vw] sm:w-[520px] h-[60vh] sm:h-[420px] bg-brand-card border ${
         isActive
@@ -319,12 +318,11 @@ function Window({ app, isActive, onActivate, onClose, onMinimize, children, zInd
     >
       {/* Title Bar */}
       <div
-        className={`h-8 flex items-center justify-between px-3 cursor-move ${ // cursor-move indicates draggable
+        className={`h-8 flex items-center justify-between px-3 ${
           isActive
             ? 'bg-gradient-to-r from-brand-primary/10 to-brand-secondary/10 border-b border-brand-primary/20'
             : 'bg-brand-card/50 border-b border-brand-muted/20'
         }`}
-        drag
       >
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
